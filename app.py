@@ -1,13 +1,8 @@
 from dotenv import dotenv_values
-from flask import Flask
+from app.config import create_app
 
-from app import blueprint
-
-
-app = Flask(__name__)
-app.config['DEBUG'] = True
 config = dotenv_values(".env")
-app.register_blueprint(blueprint)
+app = create_app()
 
 if __name__ == '__main__':
     app.run(host=config.get("HOST"), port=config.get("PORT"))

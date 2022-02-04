@@ -1,11 +1,8 @@
-
-from flask import Blueprint
 from flask_restx import Api
+from app.config import blueprint
 
 from .src.controller.helloworld_controller import api as helloworld_ctlr
-
-
-blueprint = Blueprint("api", __name__)
+from .src.controller.user_controller import api as user_ctlr
 
 api = Api(
     blueprint,
@@ -15,3 +12,4 @@ api = Api(
 )
 
 api.add_namespace(helloworld_ctlr,path="/")
+api.add_namespace(user_ctlr,path="/")
