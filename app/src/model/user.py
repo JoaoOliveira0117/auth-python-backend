@@ -1,8 +1,13 @@
-from app.config import db
+from mongoengine import Document
+from mongoengine.fields import StringField
 
-class UserModel(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), nullable=False)
-    name = db.Column(db.String(100), nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-    confirm_password = db.Column(db.String(100), nullable=False)
+class UserModel(Document):
+    uid = StringField(db_field='id', unique=True)
+    username = StringField(unique=True)
+    name = StringField()
+    password = StringField()
+
+    meta = {
+        "collection": "users",
+        "strict": False,
+    }
