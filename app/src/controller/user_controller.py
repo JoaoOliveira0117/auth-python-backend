@@ -1,8 +1,9 @@
 import uuid
-from flask import request
+from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource, fields
 
 from app.src.model.user import UserModel
+from app.src.services.user_services import create_user, get_by_username
 from app.utils.encrypt import encrypt, validate
 
 api = Namespace("user", description="user registration")
@@ -16,19 +17,19 @@ _user = api.model("user", {
 
 @api.route("/register")
 class User(Resource):
-    @api.marshal_list_with(_user, envelope="data")
     def post(self):
-        uid = str(uuid.uuid4())
-        user = {
-            "uid": uid,
+        args = {
             "username": request.json["username"],
             "name": request.json["name"],
             "password": encrypt(request.json["password"])
         }
-        try:
-            return UserModel.objects.create(**user), 201
-        except:
-            return "error", 403
+        
+        user = create_user(**args)
+
+        if not user:
+            return make_response(jsonify({'message': 'Error creating user'}), 403)
+
+        return make_response(jsonify(user), 201)
 
 @api.route("/login")
 class Login(Resource):
@@ -37,8 +38,15 @@ class Login(Resource):
             "username": request.json["username"],
             "password": request.json["password"],
         }
-
-        user = UserModel.objects.get(username=credentials["username"])
-
-        return validate(credentials["password"], user["password"])
         
+        user = get_by_username(credentials["username"])
+
+        if not user:
+            return make_response(jsonify({'message': 'Error creating user'}), 403)
+
+        check_password = validate(credentials["password"], user["password"])
+
+        if not check_password:
+            return make_response(jsonify({'message': 'Incorrect Password'}), 403)
+        
+        return make_response(jsonify({'message': "Success!"}), 200)

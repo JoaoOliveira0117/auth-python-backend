@@ -4,3 +4,4 @@ class DevelopmentConfig():
         "db": "python",
         "host": "localhost:27017"
     }
+    SECRET_KEY = "key"
