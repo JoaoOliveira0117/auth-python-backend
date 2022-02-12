@@ -1,6 +1,9 @@
 import uuid
 from flask import jsonify, make_response, request
 from flask_restx import Namespace, Resource, fields
+import jwt
+from app.config import app
+from app.src.helpers.auth import auth
 
 from app.src.model.user import UserModel
 from app.src.services.user_services import create_user, get_by_username
@@ -38,15 +41,10 @@ class Login(Resource):
             "username": request.json["username"],
             "password": request.json["password"],
         }
-        
-        user = get_by_username(credentials["username"])
 
-        if not user:
-            return make_response(jsonify({'message': 'Error creating user'}), 403)
+        token = request.headers["Authorization"]
+        test = jwt.decode(token, app.config['SECRET_KEY'],algorithms="HS256")
 
-        check_password = validate(credentials["password"], user["password"])
+        print(test)
 
-        if not check_password:
-            return make_response(jsonify({'message': 'Incorrect Password'}), 403)
-        
-        return make_response(jsonify({'message': "Success!"}), 200)
+        return auth(credentials["username"], credentials["password"])
