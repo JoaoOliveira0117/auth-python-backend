@@ -3,6 +3,7 @@ from app.config import blueprint
 
 from .src.controller.helloworld_controller import api as helloworld_ctlr
 from .src.controller.user_controller import api as user_ctlr
+from .src.controller.posts_controller import api as posts_ctlr
 
 api = Api(
     blueprint,
@@ -13,3 +14,4 @@ api = Api(
 
 api.add_namespace(helloworld_ctlr,path="/")
 api.add_namespace(user_ctlr,path="/")
+api.add_namespace(posts_ctlr, path="/posts")
